@@ -1,0 +1,11 @@
+1.  initialized npm
+2.  install express, mongoose, cors, typescript , dotenv
+3.  initialized typescript (tsc --init)
+4.  set rootdir and outdir
+5.  setup helloworld express
+6.  setup script to build tsc
+7.  then we can run the server from outdir (dist folder)
+8.  create server.ts and and listen the port from this file and set mongoose to use the server.
+9.  setup mongodb server to store the data in the database.
+10. Must set dotenv to security settings.
+11. 
