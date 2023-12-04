@@ -1,3 +1,5 @@
+import { Model } from 'mongoose';
+
 export type FullName = {
   firstName: string;
   lastName: string;
@@ -26,3 +28,7 @@ export type TUser = {
   orders?: Orders[];
   isDeleted?: boolean;
 };
+export interface IUserModel extends Model<TUser> {
+  // eslint-disable-next-line no-unused-vars
+  isUserExists(id: string): Promise<TUser | null>;
+}

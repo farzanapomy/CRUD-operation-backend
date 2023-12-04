@@ -4,10 +4,8 @@ import { UsersServices } from './user.service';
 const createUser = async (req: Request, res: Response) => {
   try {
     const user = req.body;
-
     const result = await UsersServices.createUsersIntoDB(user);
     console.log(result);
-
     res.status(200).json({
       success: true,
       message: 'User created successfully!',
@@ -23,7 +21,7 @@ const createUser = async (req: Request, res: Response) => {
     });
   }
 };
-const getAllPerson = async (req: Request, res: Response) => {
+const getAllUsers = async (req: Request, res: Response) => {
   try {
     const result = await UsersServices.getAllUserFromDB();
     // send success response
@@ -43,31 +41,30 @@ const getAllPerson = async (req: Request, res: Response) => {
   }
 };
 
-// const getSingleUser = async (req: Request, res: Response) => {
-//   try {
-//     const { userId } = req.params;
-//     const result = await UsersServices.getSinglePersonFromDB(userId);
-//     //send Success Response
-//     res.status(200).json({
-//       success: true,
-//       message: 'Single User fetched successfully!',
-//       data: result,
-//     });
-//     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//   } catch (err: any) {
-//     //send Error Response
-//     res.status(404).json({
-//       success: false,
-//       message: err.message || 'User not found',
-//       error: {
-//         code: 404,
-//         description: 'User not found!',
-//       },
-//     });
-//   }
-// };
+const getSingleUser = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const result = await UsersServices.getSingleUserFromDB(id);
+    res.status(200).json({
+      success: true,
+      message: 'User fetched successfully!',
+      data: result,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    res.status(404).json({
+      success: false,
+      message: err.message || 'User not found',
+      error: {
+        code: 404,
+        description: 'User not found!',
+      },
+    });
+  }
+};
 
 export const UsersController = {
   createUser,
-  getAllPerson,
+  getAllUsers,
+  getSingleUser,
 };

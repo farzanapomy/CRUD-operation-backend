@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { Address, FullName, Orders, TUser } from './user.interface';
+import { Address, FullName, IUserModel, Orders, TUser } from './user.interface';
 
 const fullNameSchema = new Schema<FullName>({
   firstName: {
@@ -95,4 +95,22 @@ const userSchema = new Schema<TUser>({
   },
 });
 
-export const UsersModel = model<TUser>('User', userSchema);
+//
+userSchema.statics.isUserExists = async function (id: string) {
+  const user = await UsersModel.findOne({ id }).select(
+    '-_id -__v -password -order -isDeleted -fullName._id -address._id -orders ',
+  );
+  if (!user) {
+    throw {
+      success: false,
+      message: 'User not found',
+      error: {
+        code: 404,
+        description: 'User not found!',
+      },
+    };
+  }
+  return user;
+};
+
+export const UsersModel = model<TUser, IUserModel>('User', userSchema);
