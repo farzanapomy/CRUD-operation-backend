@@ -41,7 +41,10 @@ const updateSingleUserFromDB = async (userId: string, data: TUser) => {
     const result = await UsersModel.findOneAndUpdate(
       { userId },
       { ...data },
-      { new: true },
+      {
+        new: true,
+        runValidators: true,
+      },
     ).select(
       '-_id -__v -password -orders -isDeleted -fullName._id -address._id',
     );
