@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose';
 import { Address, FullName, IUserModel, Orders, TUser } from './user.interface';
-
+import bcrypt from 'bcrypt';
+import config from '../config';
 const fullNameSchema = new Schema<FullName>({
   firstName: {
     type: String,
@@ -35,23 +36,23 @@ const addressSchema = new Schema<Address>({
     required: true,
   },
 });
-// const orderSchema = new Schema<Orders>({
-//   productName: {
-//     type: String,
-//     trim: true,
-//     required: true,
-//   },
-//   price: {
-//     type: Number,
-//     trim: true,
-//     required: true,
-//   },
-//   quantity: {
-//     type: Number,
-//     trim: true,
-//     required: true,
-//   },
-// });
+const orderSchema = new Schema<Orders>({
+  productName: {
+    type: String,
+    trim: true,
+    required: true,
+  },
+  price: {
+    type: Number,
+    trim: true,
+    required: true,
+  },
+  quantity: {
+    type: Number,
+    trim: true,
+    required: true,
+  },
+});
 
 const userSchema = new Schema<TUser>({
   userId: {
@@ -93,8 +94,14 @@ const userSchema = new Schema<TUser>({
     type: addressSchema,
     required: [true, 'hobbies is required'],
   },
+  orders: {
+    type: [orderSchema],
+  },
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  },
 });
-
 
 userSchema.statics.isUserExists = async function (userId: string) {
   const user = await UsersModel.findOne({ userId }).select(
@@ -113,5 +120,30 @@ userSchema.statics.isUserExists = async function (userId: string) {
   }
   return user;
 };
+
+// pass hashing function
+userSchema.pre('save', async function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this;
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.saltRounds_url),
+  );
+  next();
+});
+userSchema.post('save', async function (doc, next) {
+  doc.password = ' ';
+  next();
+});
+
+// checking isDelete
+userSchema.pre('find', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+userSchema.pre('findOne', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
 
 export const UsersModel = model<TUser, IUserModel>('User', userSchema);

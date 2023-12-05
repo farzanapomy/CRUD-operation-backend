@@ -98,13 +98,16 @@ const updateSingleUser = async (req: Request, res: Response) => {
     });
   }
 };
+
 const deleteSingleUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
+    console.log("userId from delete api",userId)
     const result = await UsersServices.deleteUserFromDB(userId);
+    console.log(result);
     res.status(200).json({
       success: true,
-      message: 'User updated successfully!',
+      message: 'User Deleted successfully!',
       data: result,
     });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

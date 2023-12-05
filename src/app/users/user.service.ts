@@ -52,10 +52,21 @@ const updateSingleUserFromDB = async (userId: string, data: TUser) => {
   }
 };
 
+
 const deleteUserFromDB = async (userId: string) => {
-  const result = await UsersModel.findByIdAndDelete(userId);
-  return result;
-};
+  const user = await UsersModel.isUserExists(userId)
+  if (user) {
+    const result = await UsersModel.findOneAndUpdate(
+      { userId },
+      { isDeleted: true },
+    ).select('isDeleted')
+    if (result?.isDeleted) {
+      return null
+    }
+    return null
+  }
+}
+
 export const UsersServices = {
   createUsersIntoDB,
   getAllUserFromDB,
