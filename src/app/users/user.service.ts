@@ -37,12 +37,14 @@ const getSingleUserFromDB = async (userId: string) => {
 
 const updateSingleUserFromDB = async (userId: string, data: TUser) => {
   const user = await UsersModel.isUserExists(userId);
-  console.log('user from service', user);
   if (user) {
-    const result = await UsersModel.findByIdAndUpdate(userId, data, {
-      new: true,
-      runValidators: true,
-    });
+    const result = await UsersModel.findOneAndUpdate(
+      { userId },
+      { ...data },
+      { new: true },
+    ).select(
+      '-_id -__v -password -orders -isDeleted -fullName._id -address._id',
+    );
     return result;
   }
 };

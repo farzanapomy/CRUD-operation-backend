@@ -4,10 +4,8 @@ import usersValidationSchema from './joi.validation';
 
 const createUser = async (req: Request, res: Response) => {
   try {
-   
     const user = req.body;
-
-    // creating schema using joi
+    // creating  joi validation service
     const { error, value } = usersValidationSchema.validate(user);
     console.log(error, value);
     if (error) {
@@ -82,9 +80,7 @@ const updateSingleUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
     const data = req.body;
-    console.log('data:', data, 'id', userId);
     const result = await UsersServices.updateSingleUserFromDB(userId, data);
-    console.log('result', result);
     res.status(200).json({
       success: true,
       message: 'User updated successfully!',
