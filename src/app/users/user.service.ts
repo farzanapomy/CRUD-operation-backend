@@ -30,13 +30,31 @@ const getAllUserFromDB = async () => {
   return result;
 };
 
-const getSingleUserFromDB = async (id: string) => {
-  const user = await UsersModel.isUserExists(id);
+const getSingleUserFromDB = async (userId: string) => {
+  const user = await UsersModel.isUserExists(userId);
   return user;
 };
 
+const updateSingleUserFromDB = async (userId: string, data: TUser) => {
+  const user = await UsersModel.isUserExists(userId);
+  console.log('user from service', user);
+  if (user) {
+    const result = await UsersModel.findByIdAndUpdate(userId, data, {
+      new: true,
+      runValidators: true,
+    });
+    return result;
+  }
+};
+
+const deleteUserFromDB = async (userId: string) => {
+  const result = await UsersModel.findByIdAndDelete(userId);
+  return result;
+};
 export const UsersServices = {
   createUsersIntoDB,
   getAllUserFromDB,
   getSingleUserFromDB,
+  updateSingleUserFromDB,
+  deleteUserFromDB,
 };

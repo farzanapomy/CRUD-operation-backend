@@ -95,11 +95,12 @@ const userSchema = new Schema<TUser>({
   },
 });
 
-//
-userSchema.statics.isUserExists = async function (id: string) {
-  const user = await UsersModel.findOne({ id }).select(
+
+userSchema.statics.isUserExists = async function (userId: string) {
+  const user = await UsersModel.findOne({ userId }).select(
     '-_id -__v -password -order -isDeleted -fullName._id -address._id -orders ',
   );
+  console.log('user from modal', user);
   if (!user) {
     throw {
       success: false,
