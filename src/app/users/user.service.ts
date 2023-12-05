@@ -52,20 +52,92 @@ const updateSingleUserFromDB = async (userId: string, data: TUser) => {
   }
 };
 
-
 const deleteUserFromDB = async (userId: string) => {
-  const user = await UsersModel.isUserExists(userId)
+  const user = await UsersModel.isUserExists(userId);
   if (user) {
     const result = await UsersModel.findOneAndUpdate(
       { userId },
       { isDeleted: true },
-    ).select('isDeleted')
+    ).select('isDeleted');
     if (result?.isDeleted) {
-      return null
+      return null;
     }
-    return null
+    return null;
   }
-}
+};
+const createOrderFromDB = async (userId: string, body: TUser) => {
+  const user = await UsersModel.isUserExists(userId);
+  if (user) {
+    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+    const result = await UsersModel.findOneAndUpdate(
+      { userId },
+      { $addToSet: { orders: body } },
+    ).select('orders');
+  }
+  return null;
+};
+
+const getOrderUserFromDB = async (userId: string) => {
+  const user = await UsersModel.isUserExists(userId);
+  if (user) {
+    const result = await UsersModel.findOne({ userId }).select(
+      '-orders._id -_id -userName -age -address -isDeleted -isActive -fullName -username -userId -password -email -hobbies -__v',
+    );
+    return result;
+  }
+};
+
+const totalPriceCalCForPerUserFromDB = async (userId: string) => {
+  const user = await UsersModel.isUserExists(userId);
+  if (user) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const find: any = await UsersModel.findOne({
+      userId,
+    }).select('_id');
+
+    const singleUserData = await UsersModel.aggregate([
+      {
+        $match: {
+          _id: {
+            $in: [find._id],
+          },
+        },
+      },
+
+      { $unwind: '$orders' },
+      {
+        $project: {
+          orders: 1,
+          total: {
+            $multiply: ['$orders.quantity', '$orders.price'],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: 'orders.price',
+          totalPrice: {
+            $sum: { $sum: '$total' },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$_id._id',
+          totalPrice: {
+            $sum: { $sum: '$totalPrice' },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+        },
+      },
+    ]);
+    return singleUserData;
+  }
+};
 
 export const UsersServices = {
   createUsersIntoDB,
@@ -73,4 +145,7 @@ export const UsersServices = {
   getSingleUserFromDB,
   updateSingleUserFromDB,
   deleteUserFromDB,
+  createOrderFromDB,
+  getOrderUserFromDB,
+  totalPriceCalCForPerUserFromDB,
 };

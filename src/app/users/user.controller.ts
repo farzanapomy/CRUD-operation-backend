@@ -102,7 +102,7 @@ const updateSingleUser = async (req: Request, res: Response) => {
 const deleteSingleUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
-    console.log("userId from delete api",userId)
+    console.log('userId from delete api', userId);
     const result = await UsersServices.deleteUserFromDB(userId);
     console.log(result);
     res.status(200).json({
@@ -123,10 +123,77 @@ const deleteSingleUser = async (req: Request, res: Response) => {
   }
 };
 
+const createOrderInUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const body = req.body;
+    const result = await UsersServices.createOrderFromDB(userId, body);
+    res.status(200).json({
+      success: true,
+      message: 'Order created successfully!',
+      data: result,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    res.status(404).json({
+      success: false,
+      message: err.message || 'User not found',
+      error: {
+        code: 404,
+        description: 'User not found!',
+      },
+    });
+  }
+};
+const getOrderUsers = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const result = await UsersServices.getOrderUserFromDB(userId);
+    res.status(200).json({
+      success: true,
+      message: 'Order fetched successfully!',
+      data: result,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    res.status(404).json({
+      success: false,
+      message: err.message || 'User not found',
+      error: {
+        code: 404,
+        description: 'User not found!',
+      },
+    });
+  }
+};
+const totalPriceCalc = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const result = await UsersServices.totalPriceCalCForPerUserFromDB(userId);
+    res.status(200).json({
+      success: true,
+      message: 'Order fetched successfully!',
+      data: result,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    res.status(404).json({
+      success: false,
+      message: err.message || 'User not found',
+      error: {
+        code: 404,
+        description: 'User not found!',
+      },
+    });
+  }
+};
 export const UsersController = {
   createUser,
   getAllUsers,
   getSingleUser,
   updateSingleUser,
   deleteSingleUser,
+  createOrderInUser,
+  getOrderUsers,
+  totalPriceCalc,
 };
